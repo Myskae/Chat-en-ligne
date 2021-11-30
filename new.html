@@ -670,10 +670,17 @@
             if (message != "") {
                 let newhourline = document.createElement('p');
                 newhourline.classList.add("backLine");
-                newhourline.textContent = heure + " : " + minute + " : ";
-                if(seconde>=0 && seconde<=9)    {  newhourline.textContent += "0"+seconde; }
+                if(heure>=0 && heure<=9)    {  newhourline.textContent = "0"+heure; }
                 else {
-                    newhourline.textContent += seconde;
+                    newhourline.textContent += heure;
+                }
+                if(minute>=0 && minute<=9)    {  newhourline.textContent += " : "+"0"+minute; }
+                else {
+                    newhourline.textContent += " : "+minute;
+                }
+                if(seconde>=0 && seconde<=9)    {  newhourline.textContent += " : "+ "0"+seconde; }
+                else {
+                    newhourline.textContent += " : "+ seconde;
                 }
 
                 let newMessageLine = document.createElement('p');
