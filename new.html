@@ -582,11 +582,14 @@
 
         var couleur = 0;
 
-        
+        const log_button = document.getElementById("title_login");
         const log_input = document.getElementById("login_input");
 
 
-        log_input.addEventListener("keyup", function (event) {
+        log_input.addEventListener("onkeyup", login(event) );
+        log_button.addEventListener("onclick", login(event) );
+        
+        function login(event){
 
             let log_pseudo = String(log_input.value);
 
@@ -603,7 +606,7 @@
                     })
                 }
             }
-        });
+        }
         
 
 
