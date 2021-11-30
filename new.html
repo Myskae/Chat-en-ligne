@@ -578,7 +578,7 @@
         const usersbox = document.querySelector("#userboxa");
         const messageContent = document.getElementById("usermsg");
         const msgform = document.getElementById("msgtest");
-
+        const myUsername;
 
         var couleur = 0;
 
@@ -596,6 +596,7 @@
                 event.preventDefault();
                 console.log(log_pseudo.includes(" "));
                 if ((log_pseudo.length >= 3)&&(log_pseudo.length<=15)&&(!log_pseudo.includes(" "))) {
+                    myUsername = log_pseudo;
                     socket.emit('new-user', log_pseudo);
                     socket.on('username is valid', ()=>{
                         document.getElementById("login_page").style.display = "none";
@@ -613,7 +614,7 @@
         msgform.addEventListener('submit', function (e) {
             e.preventDefault();
             if (input.value) {
-                socket.emit('chat message', {
+                socket.emit('chat message', { 
                     msg: input.value, pseudo: myUsername
                 });
                 input.value = '';
@@ -641,7 +642,7 @@
         */
 
         
-        socket.on('username not valid', () => {
+        socket.on('username is valid', () => {
             pseudo="1";
             while ((pseudo!=null)&&((pseudo.length > maxLength) || (pseudo.length < minLength))) {
                 pseudo = window.prompt('Choose a name between ' + minLength + " and " + maxLength + " characters");
@@ -714,7 +715,7 @@
                 }
                 chatbox.insertAdjacentElement("beforeEnd", newMessageLine);
                 heurebox.insertAdjacentElement("beforeEnd", newhourline);
-                messageContent.value = "";
+                //messageContent.value = "";  ligne a suppr
 
                 chatbox.chatboxTop = chatbox.chatboxHeight;
                 chatbox.animate({ chatboxTop: chatbox.chatboxHeight });
