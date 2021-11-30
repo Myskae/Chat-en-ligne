@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
 io.on('connection', (socket) => {
 
     socket.on('chat message', (msg) => {
-        console.log('message: ' + msg);
+        console.log('message: ' + msg["msg"]);
     });
 
     socket.on('new-user', (name) => {

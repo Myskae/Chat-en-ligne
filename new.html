@@ -162,7 +162,7 @@
             border-width: 2px 5px 2px 0;
             border-radius: 0px 100px 100px 0;
             padding-left: 7%;
-        }
+        } 
 
 
         #tchathour {
@@ -446,7 +446,7 @@
 
 <body>
 
-        <!--Enter an username--->
+    <!--Enter an username--->
     <div id="login_page">
         <img src="https://i.ibb.co/9stqXpr/bg-login-2.png" id="image_login">
         <div id="title_login" class="ttuc1">Choose a name !</div>
@@ -587,27 +587,26 @@
 
 
         log_input.addEventListener("keyup", login);
-        log_button.addEventListener("click", login );
-        
-        function login(event){
+        log_button.addEventListener("click", login);
+
+        function login(event) {
 
             let log_pseudo = String(log_input.value);
 
             if (event.keyCode === 13) {
                 log_pseudo = String(log_input.value);
-                
+
                 event.preventDefault();
-                console.log(log_pseudo.includes(" "));
-                if ((log_pseudo.length >= 3)&&(log_pseudo.length<=15)&&(!log_pseudo.includes(" "))) {
+                if ((log_pseudo.length >= 3) && (log_pseudo.length <= 15) && (!log_pseudo.includes(" "))) {
                     myUsername = log_pseudo;
                     socket.emit('new-user', log_pseudo);
-                    socket.on('username is valid', ()=>{
+                    socket.on('username is valid', () => {
                         document.getElementById("login_page").style.display = "none";
                     })
                 }
             }
         }
-        
+
 
 
         /*----------send message + affichage pseudo--------*/
@@ -617,7 +616,7 @@
         msgform.addEventListener('submit', function (e) {
             e.preventDefault();
             if (input.value) {
-                socket.emit('chat message', { 
+                socket.emit('chat message', {
                     msg: input.value, pseudo: myUsername
                 });
                 input.value = '';
@@ -625,13 +624,12 @@
         });
 
         let allUsers = [];
-        let allUsernames = [];   
+        let allUsernames = [];
 
         socket.on('user-connected', (users) => {
             let username;
             const usersbox = document.querySelector("#userboxa");
             for (id in users) {
-                console.log(id);
                 if (!allUsers.includes(id)) {
                     allUsers.push(id);
                     username = document.createElement('p');
@@ -650,7 +648,6 @@
             let pseudo = usersbox.querySelectorAll('p');
 
             for (let i = 0; i < pseudo.length; i++) {
-                console.log(pseudo[i]);
                 if ((pseudo[i].textContent) == name) {
                     pseudo[i].remove();
 
@@ -667,13 +664,17 @@
             var now = new Date();
             var heure = now.getHours();
             var minute = now.getMinutes();
-            var seconde = now.getSeconds()
+            var seconde = now.getSeconds();
 
             let message = msg["msg"];
             if (message != "") {
                 let newhourline = document.createElement('p');
                 newhourline.classList.add("backLine");
-                newhourline.textContent = heure + " : " + minute + " : " + seconde;
+                newhourline.textContent = heure + " : " + minute + " : ";
+                if(seconde>=0 && seconde<=9)    {  newhourline.textContent += "0"+seconde; }
+                else {
+                    newhourline.textContent += seconde;
+                }
 
                 let newMessageLine = document.createElement('p');
                 newMessageLine.classList.add("backLine");
@@ -687,10 +688,27 @@
                     newMessageLine.classList.remove("grad_bg")
                     couleur = 1;
                 }
+
+                
+
                 chatbox.insertAdjacentElement("beforeEnd", newMessageLine);
                 heurebox.insertAdjacentElement("beforeEnd", newhourline);
+
+                let divHeight = chatbox.getBoundingClientRect().height;
+                let LineHeight = newhourline.getBoundingClientRect().height;
+                let nbLignesTotal = parseInt(divHeight/LineHeight) ;
+                let msgHeight = newMessageLine.getBoundingClientRect().height;
+                let nbLignesMsg = (msgHeight / LineHeight);
+
+                console.log(LineHeight+ "+ "+msgHeight+   " + "+nbLignesMsg);
+
+                for(let i=1;i<nbLignesMsg;i++){
+                    newhourline.insertAdjacentElement("afterend",document.createElement("br"));
+                }   
+                
                 //messageContent.value = "";  ligne a suppr
 
+                
                 chatbox.chatboxTop = chatbox.chatboxHeight;
                 chatbox.animate({ chatboxTop: chatbox.chatboxHeight });
                 chatbox.lastElementChild.scrollIntoView({ behavior: 'smooth' });
