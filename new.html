@@ -622,36 +622,7 @@
         });
 
         let allUsers = [];
-        let allUsernames = [];
-
-        /*
-        var maxLength = 15;
-        var minLength = 3;
-
-        var pseudo = "a";
-
-        while ((pseudo.length > maxLength) || (pseudo.length < minLength)) {
-            pseudo = window.prompt('Choose a name between ' + minLength + " and " + maxLength + " characters");
-        }
-
-        //var pseudo = prompt("Username");
-
-        myUsername = pseudo;
-        socket.emit('new-user', myUsername);
-
-        */
-
-        
-        socket.on('username is valid', () => {
-            pseudo="1";
-            while ((pseudo!=null)&&((pseudo.length > maxLength) || (pseudo.length < minLength))) {
-                pseudo = window.prompt('Choose a name between ' + minLength + " and " + maxLength + " characters");
-            }
-            myUsername = pseudo;
-            socket.emit('new-user', myUsername);
-        })  
-
-        
+        let allUsernames = [];   
 
         socket.on('user-connected', (users) => {
             let username;

@@ -44,7 +44,6 @@ io.on('connection', (socket) => {
         }
 
         if(valid) {
-            socket.emit('username is valid');
             users[socket.id] = name;
             io.emit('user-connected', users);
         }
