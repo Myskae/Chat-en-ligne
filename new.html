@@ -613,7 +613,7 @@
         msgform.addEventListener('submit', function (e) {
             e.preventDefault();
             if (input.value) {
-                socket.emit('chat message', { 
+                socket.emit('chat message', {
                     msg: input.value, pseudo: myUsername
                 });
                 input.value = '';
@@ -714,7 +714,7 @@
                 }
                 chatbox.insertAdjacentElement("beforeEnd", newMessageLine);
                 heurebox.insertAdjacentElement("beforeEnd", newhourline);
-                //messageContent.value = "";  ligne a suppr
+                messageContent.value = "";
 
                 chatbox.chatboxTop = chatbox.chatboxHeight;
                 chatbox.animate({ chatboxTop: chatbox.chatboxHeight });
