@@ -13,28 +13,41 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/new.html');
 });
 
-
-io.on('connection', (socket) => {
-    console.log('a user connected');
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    })
-        ;
+server.listen(3000, () => {
+    setTimeout(() => { console.log('Server is loading ...'); }, 1000)
+    setTimeout(() => { console.log('Server is operationnal !'); }, 2000)
 });
 
+io.on('connection', (socket) => {
+    console.log('a user joined the server');
+    socket.on('disconnect', () => {
+        console.log('user left the server');
+    });
+});
 
-server.listen(process.env.PORT || 5000);
 
 
 io.on('connection', (socket) => {
 
     socket.on('chat message', (msg) => {
-        console.log('message: ' + msg["msg"]);
+        console.log('message: ' + msg);
     });
 
     socket.on('new-user', (name) => {
-        users[socket.id] = name;
-        io.emit('user-connected', users);
+        
+        let valid = true;
+        for (u in users) {
+            if ((users[u]==name)){
+                valid=false;
+                break;
+            }
+        }
+
+        if(valid) {
+            socket.emit('username is valid');
+            users[socket.id] = name;
+            io.emit('user-connected', users);
+        }
     })
 
     socket.on('disconnect', () => {

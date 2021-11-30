@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -225,6 +224,7 @@
             color: rgba(255, 255, 255, 0.897);
             font-family: Verdana, sans-serif;
             font-size: 20px;
+            overflow: auto;
         }
 
         #poutre {
@@ -290,6 +290,38 @@
                 0 0 100px var(--text_color),
                 0 0 150px var(--text_color);
         }
+
+
+        #pillier {
+            position: relative;
+            bottom: 0;
+            height: 50%;
+        }
+
+
+        #pillier1 {
+            left: 13%;
+        }
+
+        #pillier2 {
+            left: 29.2%;
+        }
+
+        #pillier3 {
+            left: 45.2%;
+        }
+
+        .pilliers {
+            background-image: url("https://image.shutterstock.com/image-photo/black-concrete-wall-background-texture-260nw-1530082730.jpg");
+            height: 115%;
+            width: 50px;
+            position: absolute;
+            top: 0;
+            border: ridge rgb(77, 49, 68);
+            border-width: 0 4px 0 4px;
+        }
+
+
 
 
 
@@ -414,17 +446,18 @@
 
 <body>
 
-    <!---               A VOIR
+        <!--Enter an username--->
     <div id="login_page">
         <img src="https://i.ibb.co/9stqXpr/bg-login-2.png" id="image_login">
         <div id="title_login" class="ttuc1">Choose a name !</div>
         <div><input type="text" required minlength="3" maxlength="15" autocomplete="off" id="login_input"></div>
-    </div>-->
+    </div>
+
 
     <div>
         <video autoplay muted loop id="video_background">
-            <source
-                src="https://drive.google.com/uc?export=download&id=1zQQSzjPPKO7cH-a2qiEJFAJtCQdpfqd0" type="video/mp4">
+            <source src="https://drive.google.com/uc?export=download&id=1zQQSzjPPKO7cH-a2qiEJFAJtCQdpfqd0"
+                type="video/mp4">
         </video>
     </div>
 
@@ -472,7 +505,6 @@
         </div>
     </div>
 
-
     <div id="messagerie">
         <form id="msgtest">
             <input name="usermsg" type="text" id="usermsg" autocomplete="off" placeholder="Message" />
@@ -483,8 +515,14 @@
                 <img src="https://i.ibb.co/b6yG92x/huoshen-logo-tr.png" height="25px" width="25px" href="#">
             </a>
         </div>
-    </div>
 
+
+        <div id="pillier">
+            <div id="pillier1" class="pilliers"></div>
+            <div id="pillier2" class="pilliers"></div>
+            <div id="pillier3" class="pilliers"></div>
+        </div>
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -544,8 +582,28 @@
 
         var couleur = 0;
 
+        
+        const log_input = document.getElementById("login_input");
 
 
+        log_input.addEventListener("keyup", function (event) {
+
+            let log_pseudo = String(log_input.value);
+
+            if (event.keyCode === 13) {
+                log_pseudo = String(log_input.value);
+                
+                event.preventDefault();
+                console.log(log_pseudo.includes(" "));
+                if ((log_pseudo.length >= 3)&&(log_pseudo.length<=15)&&(!log_pseudo.includes(" "))) {
+                    socket.emit('new-user', log_pseudo);
+                    socket.on('username is valid', ()=>{
+                        document.getElementById("login_page").style.display = "none";
+                    })
+                }
+            }
+        });
+        
 
 
         /*----------send message + affichage pseudo--------*/
@@ -556,50 +614,77 @@
             e.preventDefault();
             if (input.value) {
                 socket.emit('chat message', { 
-                    msg : input.value, pseudo : myUsername
+                    msg: input.value, pseudo: myUsername
                 });
                 input.value = '';
             }
         });
 
-        
-        var pseudo = window.prompt("Username");
+        let allUsers = [];
+        let allUsernames = [];
+
+        /*
+        var maxLength = 15;
+        var minLength = 3;
+
+        var pseudo = "a";
+
+        while ((pseudo.length > maxLength) || (pseudo.length < minLength)) {
+            pseudo = window.prompt('Choose a name between ' + minLength + " and " + maxLength + " characters");
+        }
+
+        //var pseudo = prompt("Username");
+
         myUsername = pseudo;
         socket.emit('new-user', myUsername);
 
-        let allUsers=[];
+        */
 
-        socket.on('user-connected', (users) =>{
-            let username; 
+        
+        socket.on('username not valid', () => {
+            pseudo="1";
+            while ((pseudo!=null)&&((pseudo.length > maxLength) || (pseudo.length < minLength))) {
+                pseudo = window.prompt('Choose a name between ' + minLength + " and " + maxLength + " characters");
+            }
+            myUsername = pseudo;
+            socket.emit('new-user', myUsername);
+        })  
+
+        
+
+        socket.on('user-connected', (users) => {
+            let username;
             const usersbox = document.querySelector("#userboxa");
             for (id in users) {
                 console.log(id);
-                if (!allUsers.includes(id)){
+                if (!allUsers.includes(id)) {
                     allUsers.push(id);
                     username = document.createElement('p');
                     username.classList.add("backLine");
                     username.textContent = users[id];
                     username.style.color = "white";
                     usersbox.insertAdjacentElement("beforeEnd", username);
+
+
                 }
             }
         })
-        
-        socket.on('user-disconnected', (name)=>{
+
+        socket.on('user-disconnected', (name) => {
             const usersbox = document.querySelector("#userboxa");
             let pseudo = usersbox.querySelectorAll('p');
 
-            for (let i=0;i<pseudo.length;i++){
+            for (let i = 0; i < pseudo.length; i++) {
                 console.log(pseudo[i]);
-                if ((pseudo[i].textContent)==name) {
+                if ((pseudo[i].textContent) == name) {
                     pseudo[i].remove();
-                    
+
                     break;
                 }
             }
 
         })
-        
+
 
 
 
@@ -609,39 +694,37 @@
             var minute = now.getMinutes();
             var seconde = now.getSeconds()
 
-                console.log(msg["pseudo"]);
-                let message = msg["msg"];
-                if (message != "") {
-                    let newhourline = document.createElement('p');
-                    newhourline.classList.add("backLine");
-                    newhourline.textContent = heure + " : " + minute + " : " + seconde;
+            let message = msg["msg"];
+            if (message != "") {
+                let newhourline = document.createElement('p');
+                newhourline.classList.add("backLine");
+                newhourline.textContent = heure + " : " + minute + " : " + seconde;
 
-                    let newMessageLine = document.createElement('p');
-                    newMessageLine.classList.add("backLine");
-                    newMessageLine.textContent = msg["pseudo"] + " : " + message;
+                let newMessageLine = document.createElement('p');
+                newMessageLine.classList.add("backLine");
+                newMessageLine.textContent = msg["pseudo"] + " : " + message;
 
-                    if (couleur) {
-                        newMessageLine.classList.add("grad_bg")
-                        couleur = 0;
-                    }
-                    else {
-                        newMessageLine.classList.remove("grad_bg")
-                        couleur = 1;
-                    }
-                    chatbox.insertAdjacentElement("beforeEnd", newMessageLine);
-                    heurebox.insertAdjacentElement("beforeEnd", newhourline);
-                    console.log('message envoyé !');
-                    messageContent.value = "";
-
-                    chatbox.chatboxTop = chatbox.chatboxHeight;
-                    chatbox.animate({ chatboxTop: chatbox.chatboxHeight });
-                    chatbox.lastElementChild.scrollIntoView({ behavior: 'smooth' });
-
-                    heurebox.chatboxTop = heurebox.chatboxHeight;
-                    heurebox.animate({ chatboxTop: heurebox.chatboxHeight });
-                    heurebox.lastElementChild.scrollIntoView({ behavior: 'smooth' });
+                if (couleur) {
+                    newMessageLine.classList.add("grad_bg")
+                    couleur = 0;
                 }
-            
+                else {
+                    newMessageLine.classList.remove("grad_bg")
+                    couleur = 1;
+                }
+                chatbox.insertAdjacentElement("beforeEnd", newMessageLine);
+                heurebox.insertAdjacentElement("beforeEnd", newhourline);
+                //messageContent.value = "";  ligne a suppr
+
+                chatbox.chatboxTop = chatbox.chatboxHeight;
+                chatbox.animate({ chatboxTop: chatbox.chatboxHeight });
+                chatbox.lastElementChild.scrollIntoView({ behavior: 'smooth' });
+
+                heurebox.chatboxTop = heurebox.chatboxHeight;
+                heurebox.animate({ chatboxTop: heurebox.chatboxHeight });
+                heurebox.lastElementChild.scrollIntoView({ behavior: 'smooth' });
+            }
+
         });
         /*---------------------------------------------------*/
 
