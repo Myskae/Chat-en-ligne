@@ -724,7 +724,7 @@
                 let LineHeight = newhourline.getBoundingClientRect().height;
                 let nbLignesTotal = parseInt(divHeight / LineHeight);
                 let msgHeight = newMessageLine.getBoundingClientRect().height;
-                let nbLignesMsg = (msgHeight / LineHeight);
+                let nbLignesMsg = parseInt((msgHeight / LineHeight));
 
                 console.log(LineHeight + "+ " + msgHeight + " + " + nbLignesMsg);
 
