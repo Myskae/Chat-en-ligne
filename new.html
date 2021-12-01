@@ -587,13 +587,13 @@
 
 
         log_input.addEventListener("keyup", login);
-        log_button.addEventListener("click", login);
+        log_button.addEventListener("click", login2);
 
         function login(event) {
 
             let log_pseudo = String(log_input.value);
 
-            if (event.keyCode === 13) {
+            if ((event.keyCode === 13)) {
                 log_pseudo = String(log_input.value);
 
                 event.preventDefault();
@@ -604,6 +604,25 @@
                         document.getElementById("login_page").style.display = "none";
                     })
                 }
+            }
+        }
+
+
+        function login2() {
+
+            let log_pseudo = String(log_input.value);
+
+
+            log_pseudo = String(log_input.value);
+
+            event.preventDefault();
+            if ((log_pseudo.length >= 3) && (log_pseudo.length <= 15) && (!log_pseudo.includes(" "))) {
+                myUsername = log_pseudo;
+                socket.emit('new-user', log_pseudo);
+                socket.on('username is valid', () => {
+                    document.getElementById("login_page").style.display = "none";
+                })
+
             }
         }
 
@@ -720,18 +739,18 @@
                 chatbox.animate({ chatboxTop: chatbox.chatboxHeight });
                 chatbox.scrollBy({
                     top: newMessageLine.getBoundingClientRect().bottom,
-                    left:0,
-                    behavior : "smooth"
-                   
+                    left: 0,
+                    behavior: "smooth"
+
                 });
 
                 heurebox.chatboxTop = heurebox.chatboxHeight;
                 heurebox.animate({ chatboxTop: heurebox.chatboxHeight });
                 heurebox.scrollBy({
                     top: newhourline.getBoundingClientRect().bottom,
-                    left:0,
-                    behavior : "smooth"
-                    
+                    left: 0,
+                    behavior: "smooth"
+
                 });
             }
 
