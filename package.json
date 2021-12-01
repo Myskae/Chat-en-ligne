@@ -11,8 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "socket.io": "^4.4.0",
-    "node" :"14.x",
-    "npm" : "6.x"
+    "node": "14.x",
+    "node-emoji": "^1.11.0",
+    "npm": "6.x",
+    "socket.io": "^4.4.0"
   }
 }
