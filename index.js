@@ -5,6 +5,8 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const PORT = process.env.PORT || 3000;
+var emoji = require('node-emoji');
+
 let users = {};
 
 
@@ -30,7 +32,7 @@ io.on('connection', (socket) => {
 io.on('connection', (socket) => {
 
     socket.on('chat message', (msg) => {
-        console.log('message: ' + msg["msg"]);
+        console.log('message: ' + emoji.emojify(msg["msg"])) ;
     });
 
     socket.on('new-user', (name) => {
@@ -64,6 +66,7 @@ io.emit('some event', { someProperty: 'some value', otherProperty: 'other value'
 
 io.on('connection', (socket) => {
     socket.on('chat message', (msg) => {
+        msg["msg"] = emoji.emojify(msg["msg"]);
         io.emit('chat message', (msg));
     });
 });
