@@ -604,7 +604,8 @@
 
         log_input.addEventListener("keyup", login);
         log_button.addEventListener("click", login2);
-
+        heurebox.style.display = "none";
+        chatbox.style.display = "none";
         function login(event) {
 
             let log_pseudo = String(log_input.value);
@@ -618,6 +619,9 @@
                     socket.emit('new-user', log_pseudo);
                     socket.on('username is valid', () => {
                         document.getElementById("login_page").style.display = "none";
+                        heurebox.style.display = "block";
+                        chatbox.style.display = "block";
+                        
                     })
                 }
             }
