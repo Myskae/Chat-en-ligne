@@ -6,7 +6,9 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 var emoji = require('node-emoji');
+var path = require('path');
 
+app.use(express.static(path.join(__dirname, 'animation')));
 let users = {};
 
 
