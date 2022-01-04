@@ -6,12 +6,12 @@
     <link rel="shortcut icon" type="image/x-icon" href="https://i.ibb.co/n0XGvpG/logo-kaiwa.png"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        @import url('https://fonts.googleapis.com/css?family=Rajdhani&display=swap');
+                @import url('https://fonts.googleapis.com/css?family=Rajdhani&display=swap');
 
         :root {
             --text_color: #54b8fa;
-            --border_color: rgb(184, 7, 190);
-            --bg_color: rgba(0, 0, 0, 0.3);
+            --border_color: rgb(236, 205, 118);
+            --bg_color: rgba(78, 78, 78, 0.5);
         }
 
         * {
@@ -19,16 +19,42 @@
             margin: 0;
             font-family: italic 1.2em "Fira Sans", serif;
         }
-        
-        html{
-            overflow:hidden;   
+
+        body {
+            background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/455886b2-bff1-4757-a195-e89f97a0b5e0/d6kvnyd-64268279-624b-4a5a-af3b-c4cbc0fcae25.jpg/v1/fill/w_1280,h_720,q_75,strp/stellar_collision_by_kuldarleement_d6kvnyd-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzIwIiwicGF0aCI6IlwvZlwvNDU1ODg2YjItYmZmMS00NzU3LWExOTUtZTg5Zjk3YTBiNWUwXC9kNmt2bnlkLTY0MjY4Mjc5LTYyNGItNGE1YS1hZjNiLWM0Y2JjMGZjYWUyNS5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.vXRjzzU4jHH6Dd06KTMq71GfiSlobMIs56fpK1S2xDo');
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            overflow: hidden;
         }
-        #video_background {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1000;
+
+        #top_right_buttons{
+            position: absolute;
+            display: flex;
+            top: 15px;
+            right: 15px;
+        }
+        .top_right_button{
+            margin-right: 15px;
+            border-radius: 10px;
+            border-color: var(--border_color);
+            width: 100px;
+            height: 50px;
+            font-size: 1.5rem;
+            background-color: var(--bg_color);
+            color: rgb(170, 247, 230);
+            text-shadow:
+                0 0 4px var(--text_color),
+                0 0 11px var(--text_color),
+                0 0 19px var(--text_color),
+                0 0 40px var(--text_color),
+                0 0 80px var(--text_color),
+                0 0 90px var(--text_color),
+                0 0 100px var(--text_color),
+                0 0 150px var(--text_color);
+            font-family: 'Rajdhani', cursive;
+            cursor: pointer;
         }
 
         /*-------------------- logo + titre ------------------*/
@@ -471,12 +497,16 @@
         <div><input type="text" required minlength="3" maxlength="15" autocomplete="off" id="login_input"></div>
     </div>
 
+     <audio loop muted id="music_audio">
+        <source src="../music_audio.mp3" />     
+    </audio>
+    
+
+
     <div id="MAIN_PAGE">
-        <div>
-            <video autoplay muted loop id="video_background">
-                <source src="https://drive.google.com/uc?export=download&id=1zQQSzjPPKO7cH-a2qiEJFAJtCQdpfqd0"
-                    type="video/mp4">
-            </video>
+        <div id="top_right_buttons">
+            <button id="music_button" onclick="play()" class="top_right_button">Unmute</button>
+            <button id="exit_button" onclick="location.href = '../deconnexion/deco.html'" class="top_right_button">Leave</button>
         </div>
 
         <div id="logo_title">
@@ -494,7 +524,7 @@
 
         <div id="titre_tchat_user">
             <div id="titre_tchat">
-                <a href="page3.html"><p class="ttuc1">Main Chat</p></a>
+                    <p class="ttuc1">Main Chat</p>
             </div>
             <div id="titre_user">
                 <p class="ttuc1">Online</p>
@@ -562,6 +592,29 @@
 
         var socket = io();
 
+        var confirm_boolean = true;
+        
+        function play(){
+    if (confirm_boolean){
+        const confirm_music = window.confirm("Voulez-vous activer la musique en arrière plan ? \n Le son pourra être coupé ensuite si voulu.");
+        console.log(confirm_music);
+        if (confirm_music) document.getElementById("music_audio").play();
+        confirm_boolean = false;
+    }
+    
+    mymusic = document.getElementById("music_audio");
+    mymusicbutton = document.getElementById("music_button");
+    document.getElementById("music_audio").volume = 0.03;
+    if (mymusicbutton.innerText == "Mute"){
+        mymusic.muted = true;
+        mymusicbutton.innerText = "Unmute";
+    }
+    else {
+        mymusic.muted = false;
+        mymusicbutton.innerText = "Mute";
+    }
+}
+        
         /*logo anim.*/
         /*-----------------------------------------------------------------------------------------*/
         const logos = document.getElementById("logos");
