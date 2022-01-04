@@ -596,7 +596,7 @@
         
         function play(){
     if (confirm_boolean){
-        const confirm_music = window.confirm("Voulez-vous activer la musique en arrière plan ? \n Le son pourra être coupé ensuite si voulu.");
+        const confirm_music = window.confirm("Voulez-vous activer la musique en arrière plan ? \n La musique pourra être mute/unmute ensuite.");
         console.log(confirm_music);
         if (confirm_music) document.getElementById("music_audio").play();
         confirm_boolean = false;
