@@ -24,32 +24,15 @@ myform.addEventListener("click", function () {
 
     let log_pseudo2 = String(log_pseudo.value);
     let log_mdp2 = String(log_mdp.value);
-    let connection_mode = "pseudo";
-
-    if (log_pseudo2.includes("@")) {
-        connection_mode = "email";
-        socket.emit('connection-user', log_pseudo2, log_mdp2, connection_mode);
 
 
-        socket.on('connection_invalid', () => {
-            alert("Identifiants incorrects !");
-        })
+     if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" "))) {
 
-        socket.on('connection_valid', () => {
-            document.cookie = "cookie_pseudo=" + log_pseudo2 + "; path=/";
-            location.href = "../index/index.html";
-        })
-
-    }
-
-    else if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" "))) {
-        connection_mode = "pseudo";
-
-        socket.emit('connection-user', log_pseudo2, log_mdp2, connection_mode);
+        socket.emit('connection-user', log_pseudo2, log_mdp2);
 
 
         socket.on('connection_invalid', () => {
-            alert("Identifiants incorrects !\nCe pseudo est peut-être déjà connecté\nsinon\nVotre mot de passe/pseudo/email est incorrect");
+            alert("Identifiants incorrects !\nCe pseudo est peut-être déjà connecté\nVotre mot de passe/pseudo/email est peut-être incorrect\nCet utilisateur n'est peut-être pas enregistré");
         })
 
         socket.on('connection_valid', () => {
@@ -70,26 +53,14 @@ function entrer(event) {
 
         let log_pseudo2 = String(log_pseudo.value);
         let log_mdp2 = String(log_mdp.value);
-        let connection_mode = "pseudo";
 
         event.preventDefault();
-        if (log_pseudo2.includes("@")) {
-            connection_mode = "email";
-            socket.emit('connection-user', log_pseudo2, log_mdp2, connection_mode);
-            socket.on('connection_invalid', () => {
-                alert("Identifiants incorrects !");
-            })
-            socket.on('connection_valid', () => {
-                document.cookie = "cookie_pseudo=" + log_pseudo2 + "; path=/";
-                location.href = "../index/index.html";
-            })
-        }
+    
 
-        else if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" "))) {
-            connection_mode = "pseudo";
-            socket.emit('connection-user', log_pseudo2, log_mdp2, connection_mode);
+        if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" "))) {
+            socket.emit('connection-user', log_pseudo2, log_mdp2);
             socket.on('connection_invalid', () => {
-                alert("Identifiants incorrects !");
+                alert("Identifiants incorrects !\nCe pseudo est peut-être déjà connecté\nVotre mot de passe/pseudo/email est peut-être incorrect\nCet utilisateur n'est peut-être pas enregistré");
             })
 
             socket.on('connection_valid', () => {
