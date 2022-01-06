@@ -68,7 +68,6 @@ io.on('connection', (socket) => {
 
     socket.on('chat message', (msg) => {
         console.log('message: ' + emoji.emojify(msg["msg"]));
-        //console.log(connected_users);
     });
 
 
@@ -102,10 +101,9 @@ io.on('connection', (socket) => {
 
 
 
-    socket.on('connection-user', (pseudo, mdp, mode) => {
+    socket.on('connection-user', (pseudo, mdp) => {
         var valid = true;
         var myrandomtoken = create_token();
-        var new_pseudo = pseudo;
 
         for (ids in connected_users) {
             if ((connected_users[ids][1] == pseudo)) {
@@ -114,9 +112,8 @@ io.on('connection', (socket) => {
             }
         }
         function first() {
-            con.query("SELECT mdp,pseudo FROM utilisateurs WHERE " + mode + " = '" + pseudo + "'", function (err, result) {
+            con.query("SELECT mdp,pseudo FROM utilisateurs WHERE pseudo = '" + pseudo + "'", function (err, result) {
 
-                if (mode == "email") new_pseudo = result[0].pseudo;
                 if (pseudo != result[0].pseudo || mdp != result[0].mdp) {
                     valid = false;
                 }
@@ -126,8 +123,7 @@ io.on('connection', (socket) => {
         function second() {
             if (valid) {
                 socket.emit("connection_valid");
-                connected_users[socket.id] = ['empty', new_pseudo, myrandomtoken];
-                //console.log(connected_users);
+                connected_users[socket.id] = ['empty', pseudo, myrandomtoken];
             }
             else socket.emit("connection_invalid");
 
