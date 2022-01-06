@@ -93,7 +93,7 @@ function pseudo_cookie() {
 }
 
 myUsername = pseudo_cookie();
-if (myUsername == "") location.href = '../accueil/accueil.html';
+if (myUsername == "") location.href = 'https://kaiwaonline.herokuapp.com/';
 else document.cookie = document.cookie = "cookie_pseudo=; path=/";
 
 
