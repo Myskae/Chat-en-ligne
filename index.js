@@ -35,9 +35,6 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/src/accueil/accueil.html');
 });
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/src/index/index.html');
-});
 
 server.listen(PORT, () => {
     setTimeout(() => { console.log('Server is loading ...'); }, 1000)
