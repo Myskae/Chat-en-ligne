@@ -14,6 +14,7 @@
     "node": "14.x",
     "node-emoji": "^1.11.0",
     "npm": "6.x",
-    "socket.io": "^4.4.0"
+    "socket.io": "^4.4.0",
+    "mysql":"^2.16.X"
   }
 }
