@@ -30,7 +30,7 @@ myform.addEventListener("click", function () {
 
 
 
-  if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" ")) && (!log_pseudo.includes("@"))) {
+  if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" ")) && (!log_pseudo2.includes("@"))) {
 
     socket.emit('inscription-user', log_pseudo2, log_mdp2, log_email2);
 
@@ -74,7 +74,7 @@ function entrer(event) {
 
 
     event.preventDefault();
-    if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" ")) && (!log_pseudo.includes("@"))) {
+    if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" ")) && (!log_pseudo2.includes("@"))) {
 
       socket.emit('inscription-user', log_pseudo2, log_mdp2, log_email2);
 
