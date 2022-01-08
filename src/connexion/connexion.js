@@ -26,7 +26,7 @@ myform.addEventListener("click", function () {
     let log_mdp2 = String(log_mdp.value);
 
 
-     if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" "))) {
+    if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" "))) {
 
         socket.emit('connection-user', log_pseudo2, log_mdp2);
 
@@ -36,8 +36,17 @@ myform.addEventListener("click", function () {
         })
 
         socket.on('connection_valid', () => {
-            document.cookie = "cookie_pseudo=" + log_pseudo2 + "; path=/";
-            location.href = "../index/index.html";
+            socket.emit("ban?",log_pseudo2);
+            socket.on("ban?", (boul) => {
+                if (boul) {
+                    alert("Vous etes banni");
+                }
+                else {
+                    document.cookie = "cookie_pseudo=" + log_pseudo2 + "; path=/";
+                    location.href = "../index/index.html";
+                }
+            })
+
         })
     }
     else alert("Pseudo incorrect ! Veuillez-choisir un pseudo entre 3 et 15 lettres !\nSans caractères spéciaux !");
@@ -55,7 +64,7 @@ function entrer(event) {
         let log_mdp2 = String(log_mdp.value);
 
         event.preventDefault();
-    
+
 
         if ((log_pseudo2.length >= 3) && (log_pseudo2.length <= 15) && (!log_pseudo2.includes(" "))) {
             socket.emit('connection-user', log_pseudo2, log_mdp2);
@@ -64,8 +73,17 @@ function entrer(event) {
             })
 
             socket.on('connection_valid', () => {
-                document.cookie = "cookie_pseudo=" + log_pseudo2 + "; path=/";
-                location.href = "../index/index.html";
+                socket.emit("ban?",log_pseudo2);
+                socket.on("ban?", (boul) => {
+                    if (boul) {
+                        alert("Vous etes banni");
+                    }
+                    else {
+                        document.cookie = "cookie_pseudo=" + log_pseudo2 + "; path=/";
+                        location.href = "../index/index.html";
+                    }
+                })
+    
             })
         }
         else alert("Pseudo incorrect ! Veuillez-choisir un pseudo entre 3 et 15 lettres !\nSans caractères spéciaux !");

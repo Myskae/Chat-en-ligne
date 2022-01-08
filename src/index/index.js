@@ -79,6 +79,26 @@ const msgform = document.getElementById("msgtest");
 let myUsername;
 
 
+/*Get cookie pour avoir le pseudo et pas avoir de bug ?*/
+function getCookie(name) {
+    var dc = document.cookie;
+    var prefix = name + "=";
+    var begin = dc.indexOf("; " + prefix);
+    if (begin == -1) {
+        begin = dc.indexOf(prefix);
+        if (begin != 0) return null;
+    }
+    else {
+        begin += 2;
+        var end = document.cookie.indexOf(";", begin);
+        if (end == -1) {
+            end = dc.length;
+        }
+    }
+    return decodeURI(dc.substring(begin + prefix.length, end));
+}
+
+
 function pseudo_cookie() {
     let testcookie = document.cookie;
     var chaine = "";
@@ -92,7 +112,7 @@ function pseudo_cookie() {
     return chaine;
 }
 
-myUsername = pseudo_cookie();
+myUsername = getCookie("cookie_pseudo");
 if (myUsername == "") location.href = 'https://kaiwaonline.herokuapp.com/';
 else document.cookie = document.cookie = "cookie_pseudo=; path=/";
 
@@ -111,7 +131,7 @@ var input = document.getElementById('usermsg');
 
 let allUsers = [];
 
-socket.emit('register_me',(myUsername));
+socket.emit('register_me', (myUsername));
 
 socket.on('user-connected', (users) => {
     let username;
@@ -126,6 +146,27 @@ socket.on('user-connected', (users) => {
             usersbox.insertAdjacentElement("beforeEnd", username);
 
 
+            /* Rend les personnes en ligne "clickable" pour permettre de faire certaines actions */
+            if (myUsername=="ebium"){
+            username.addEventListener("click", () => {
+
+                let nom = username.textContent;
+                let kick = document.getElementById("kick");
+                let ban = document.getElementById("ban");
+
+                //Copier coller
+                modal.style.display = "block";
+                ban.addEventListener("click", () => {
+                    let duree = prompt("Minutes?");
+                    socket.emit("ban", duree, nom);
+                })
+
+                kick.addEventListener("click", () => {
+                    socket.emit("kick", nom);
+                })
+
+            })
+        }
         }
     }
 })
@@ -140,6 +181,31 @@ msgform.addEventListener('submit', function (event) {
         input.value = '';
     }
 });
+
+
+
+/* L'utilisateur sera deconnecter en recevant ce signal, avec un msg, s'il a été banni ou expulsé */
+socket.on("deco", (msg) => {
+    let newMessageLine = document.createElement('p');
+    newMessageLine.classList.add("backLine");
+    newMessageLine.textContent = msg == "ban" ? "Vous avez ete banni" : "Vous avez ete expulse";
+    chatbox.insertAdjacentElement("beforeEnd", newMessageLine);
+
+    socket.emit('forceDisconnect');
+})
+
+
+/* Créer un cookie ban lorsque l'utilisateur reçoit ce signal d'une durée de "duree" minute */
+socket.on("cookie", (duree) => {
+
+    var date = new Date();
+    if (duree)
+        date.setTime(date.getTime() + (duree *60* 1000) - (3600 * 1000));
+    
+    document.cookie = "ban=oui; expires=" + date + "; path=/";
+
+})
+
 
 
 socket.on('user-disconnected', (name) => {
@@ -226,3 +292,11 @@ socket.on('chat message', function (msg) {
     }
 
 });
+
+
+var modal = document.getElementById("myModal");
+window.onclick = function (event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
