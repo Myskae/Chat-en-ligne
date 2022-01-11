@@ -304,7 +304,7 @@ io.on('connection', (socket) => {
         })
     })
 
-    socket.on("enlever", (username) => {
+    socket.on("enleveradmin", (username) => {
         con.query("Select admin from utilisateurs where pseudo = '" + username + "'", function (err, result) {
             if (err) throw err;
             if (result[0]) {
