@@ -1,1 +1,1 @@
-web: node index.js
+web: node index.js > error_log.txt
