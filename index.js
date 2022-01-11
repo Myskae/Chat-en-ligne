@@ -251,10 +251,12 @@ io.on('connection', (socket) => {
     /* Verifie si l'utilisateur est dans la table ban */
     socket.on("ban?", (pseudo) => {
         con.query("SELECT id FROM utilisateurs WHERE pseudo ='" + pseudo + "'", function (err, result) {
-            con.query("SELECT userID FROM ban WHERE userID = '" + result[0].id + "'", function (err, res) {
-                socket.emit("ban?", res[0]);
-            });
-
+            if(result[0]){
+                con.query("SELECT userID FROM ban WHERE userID = '" + result[0].id + "'", function (err, res) {
+                    socket.emit("ban?", res[0]);
+                });
+            }
+        
         });
     })
 
