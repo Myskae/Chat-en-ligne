@@ -108,7 +108,12 @@ io.on('connection', (socket) => {
         function first() {
             con.query("SELECT mdp,pseudo FROM utilisateurs WHERE pseudo = '" + pseudo + "'", function (err, result) {
 
-                if (pseudo != result[0].pseudo || mdp != result[0].mdp) {
+                if (result[0] != undefined) {
+                    if (pseudo != result[0].pseudo || mdp != result[0].mdp) {
+                        valid = false;
+                    }
+                }
+                else {
                     valid = false;
                 }
                 second();
