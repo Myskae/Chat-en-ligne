@@ -212,15 +212,11 @@ io.on('connection', (socket) => {
 
     /* Envoie un signal à "nom" qui permet de le bannir, si c'est un utilisateur, il sera mis dans la table ban sinon il créera un cookie ban, puis il se fait deconnecter du serveur */
     socket.on("ban", (duree, pseudo) => {
-
         var sql = "SELECT * FROM utilisateurs where pseudo = '" + pseudo + "'";
         con.query(sql, function (err, result) {
             if (err) throw err;
-            
-            if(!estAdmin(pseudo)){
-                for (ids in connected_users) {
+            for (ids in connected_users) {
                 if (connected_users[ids][1] == pseudo) {
-                    
                     if (result[0]) {
                         let temps = "";
                         if (duree)
@@ -232,22 +228,20 @@ io.on('connection', (socket) => {
                     }
                     else {
                         if (duree) {
-    
-                            io.to(connected_users[ids][1]).emit("cookie", duree);
+
+                            io.to(connected_users[ids][0]).emit("cookie", duree);
                         }
                         else {
-                            io.to(connected_users[ids][1]).emit("cookie", 0);
+                            io.to(connected_users[ids][0]).emit("cookie", 0);
                         }
                     }
                     console.log("Utilisateur banni");
-                    io.to(connected_users[ids][1]).emit("deco","kick");
+                    io.to(connected_users[ids][0]).emit("deco", "kick");
                 }
             }
-            }
-            
-        
         })
     })
+    
 
     /* Verifie si l'utilisateur est dans la table ban */
     socket.on("ban?", (pseudo) => {
@@ -260,11 +254,10 @@ io.on('connection', (socket) => {
     })
 
     /* Envoie un signal à "pseudo" qui permet de le deconnecter */
-    socket.on("kick",(pseudo)=>{
-        console.log(connected_users);
+    socket.on("kick", (pseudo) => {
         for (ids in connected_users) {
-            if (connected_users[ids][1] == pseudo && !estAdmin(pseudo)) {
-                io.to(connected_users[ids][0]).emit("deco","kick");
+            if (connected_users[ids][1] == pseudo) {
+                io.to(connected_users[ids][0]).emit("deco", "kick");
             }
         }
     })
@@ -341,14 +334,3 @@ io.on('connection', (socket) => {
     }
     
 });
-
-/* Vérifie si l'utilisateur est admin */
-function estAdmin(username){
-        con.query("Select admin from utilisateurs where pseudo = '" + username + "'", function (err, result) {
-            if (err) throw err;
-            if (result[0]) {
-                return result[0].admin == 1;
-            }
-            return false;
-        })
-    }
