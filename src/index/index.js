@@ -79,26 +79,6 @@ const msgform = document.getElementById("msgtest");
 let myUsername;
 
 
-/*Get cookie pour avoir le pseudo et pas avoir de bug ?*/
-function getCookie(name) {
-    var dc = document.cookie;
-    var prefix = name + "=";
-    var begin = dc.indexOf("; " + prefix);
-    if (begin == -1) {
-        begin = dc.indexOf(prefix);
-        if (begin != 0) return null;
-    }
-    else {
-        begin += 2;
-        var end = document.cookie.indexOf(";", begin);
-        if (end == -1) {
-            end = dc.length;
-        }
-    }
-    return decodeURI(dc.substring(begin + prefix.length, end));
-}
-
-
 function pseudo_cookie() {
     let testcookie = document.cookie;
     var chaine = "";
@@ -112,8 +92,8 @@ function pseudo_cookie() {
     return chaine;
 }
 
-myUsername = getCookie("cookie_pseudo");
-if (myUsername == "") location.href = 'https://kaiwaonline.herokuapp.com/';
+myUsername = pseudo_cookie();
+if (myUsername == "") location.href = '../accueil/accueil.html';
 else document.cookie = document.cookie = "cookie_pseudo=; path=/";
 
 
@@ -131,48 +111,24 @@ var input = document.getElementById('usermsg');
 
 let allUsers = [];
 
-socket.emit('register_me', (myUsername));
+socket.emit('register_me',(myUsername));
 
 socket.on('user-connected', (users) => {
-    console.log(users);
     let username;
-    let nom
     const usersbox = document.querySelector("#userboxa");
     for (id in users) {
-        if (!allUsers.includes(users[id][1])) {
-            allUsers.push(users[id][1]);
+        if (!allUsers.includes(id[1])) {
+            allUsers.push(id[1]);
             username = document.createElement('p');
             username.classList.add("backLine");
             username.textContent = users[id][1];
             username.style.color = "white";
             usersbox.insertAdjacentElement("beforeEnd", username);
 
-            /* Rend les personnes en ligne "clickable" pour permettre de faire certaines actions */
-            if (myUsername == "ebium" && username.textContent != myUsername) {
-                username.addEventListener("click", () => {
-                    nom = users[id][1];
-                    let kick = document.getElementById("kick");
-                    let ban = document.getElementById("ban");
-                    console.log(nom);
-                    //Copier coller
-                    modal.style.display = "block";
-                    ban.addEventListener("click", () => {
-                        let duree = prompt("Minutes?");
-                        socket.emit("ban", duree, nom);
-                    })
-
-                    kick.addEventListener("click", () => {
-                        socket.emit("kick", nom);
-                    })
-
-                })
-            }
 
         }
-
     }
 })
-
 
 
 msgform.addEventListener('submit', function (event) {
@@ -184,31 +140,6 @@ msgform.addEventListener('submit', function (event) {
         input.value = '';
     }
 });
-
-
-
-/* L'utilisateur sera deconnecter en recevant ce signal, avec un msg, s'il a été banni ou expulsé */
-socket.on("deco", (msg) => {
-    let newMessageLine = document.createElement('p');
-    newMessageLine.classList.add("backLine");
-    newMessageLine.textContent = msg == "ban" ? "Vous avez ete banni" : "Vous avez ete expulse";
-    chatbox.insertAdjacentElement("beforeEnd", newMessageLine);
-
-    socket.emit('forceDisconnect');
-})
-
-
-/* Créer un cookie ban lorsque l'utilisateur reçoit ce signal d'une durée de "duree" minute */
-socket.on("cookie", (duree) => {
-
-    var date = new Date();
-    if (duree)
-        date.setTime(date.getTime() + (duree *60* 1000) - (3600 * 1000));
-    
-    document.cookie = "ban=oui; expires=" + date + "; path=/";
-
-})
-
 
 
 socket.on('user-disconnected', (name) => {
@@ -273,89 +204,6 @@ socket.on('chat message', function (msg) {
         }
 
         //messageContent.value = "";  ligne a suppr
-
-
-        chatbox.chatboxTop = chatbox.chatboxHeight;
-        chatbox.animate({ chatboxTop: chatbox.chatboxHeight });
-        chatbox.scrollBy({
-            top: newMessageLine.getBoundingClientRect().bottom,
-            left: 0,
-            behavior: "smooth"
-
-        });
-
-        heurebox.chatboxTop = heurebox.chatboxHeight;
-        heurebox.animate({ chatboxTop: heurebox.chatboxHeight });
-        heurebox.scrollBy({
-            top: newhourline.getBoundingClientRect().bottom,
-            left: 0,
-            behavior: "smooth"
-
-        });
-    }
-
-});
-
-
-var modal = document.getElementById("myModal");
-window.onclick = function (event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
-
-
-socket.on('private message', function (msg) {
-
-    var now = new Date();
-    var heure = now.getHours();
-    var minute = now.getMinutes();
-
-    let message = msg["msg"];
-    if (message != "") {
-        let newhourline = document.createElement('p');
-        newhourline.classList.add("backLine");
-        if (heure >= 0 && heure <= 9) { newhourline.textContent = "0" + heure; }
-        else {
-            newhourline.textContent += heure;
-        }
-        if (minute >= 0 && minute <= 9) { newhourline.textContent += " : " + "0" + minute; }
-        else {
-            newhourline.textContent += " : " + minute;
-        }
-
-
-        let newMessageLine = document.createElement('p');
-        newMessageLine.classList.add("backLine");
-        newMessageLine.textContent = "(private) " + msg["pseudo"] + " : " + message;
-
-        if (couleur) {
-            newMessageLine.classList.add("grad_bg")
-            couleur = 0;
-        }
-        else {
-            newMessageLine.classList.remove("grad_bg")
-            couleur = 1;
-        }
-
-
-
-        chatbox.insertAdjacentElement("beforeEnd", newMessageLine);
-        heurebox.insertAdjacentElement("beforeEnd", newhourline);
-
-        let divHeight = chatbox.getBoundingClientRect().height;
-        let LineHeight = newhourline.getBoundingClientRect().height;
-        let nbLignesTotal = parseInt(divHeight / LineHeight);
-        let msgHeight = newMessageLine.getBoundingClientRect().height;
-        let nbLignesMsg = parseInt((msgHeight / LineHeight));
-
-        for (let i = 1; i < nbLignesMsg; i++) {
-            newhourline.insertAdjacentElement("afterend", document.createElement("br"));
-        }
-
-        newhourline.style.color = "red";
-        newMessageLine.style.color = "red";
-
 
 
         chatbox.chatboxTop = chatbox.chatboxHeight;
