@@ -24,12 +24,6 @@ const con = mysql.createPool({
     multipleStatements: true
 });
 
-var sql = "DELETE FROM testonline ";
-con.query(sql, function (err, result) {
-    if (err) throw err;
-    console.log("testonline rafraichi");
-});
-
 /* Raffraichi la table ban chaque minute : toutes les 60 000 ms pour enlever les personnes banni qui ont dépasser leurs de temps de bannissements*/
 setInterval(() => {
     var sql = "DELETE FROM ban WHERE temps < NOW() + INTERVAL 1 HOUR";
@@ -182,12 +176,6 @@ io.on('connection', (socket) => {
             if (connected_users[ids][1] == pseudo) {
                 connected_users[ids][0] = socket.id;
 
-                /* Met l'utilisateur dans la table testonline qui permet de référencer les personnes en ligne */
-                var sql = "INSERT INTO testonline (id, pseudo) VALUES ('" + socket.id + "', '" + pseudo + "')";
-                con.query(sql, function (err, result) {
-                    if (err) throw err;
-                    console.log("1 utilisateur en ligne de test online");
-                });
             }
         }
         io.emit('user-connected', connected_users);
@@ -208,11 +196,7 @@ io.on('connection', (socket) => {
             if (connected_users[mytoken][0] != 'empty') {
                 io.emit('user-disconnected', connected_users[mytoken][1]);
 
-                var sql = "DELETE FROM testonline WHERE id = '" + socket.id + "'";
-                con.query(sql, function (err, result) {
-                    if (err) throw err;
-                    console.log("1 utilisateur deconnecte de testonline");
-                })
+                
 
                 delete connected_users[mytoken];
             }
@@ -227,37 +211,38 @@ io.on('connection', (socket) => {
     });
 
     /* Envoie un signal à "nom" qui permet de le bannir, si c'est un utilisateur, il sera mis dans la table ban sinon il créera un cookie ban, puis il se fait deconnecter du serveur */
-    socket.on("ban", (duree, nom) => {
+    socket.on("ban", (duree, pseudo) => {
 
-        var sql = "SELECT id FROM testonline WHERE pseudo = '" + nom + "';SELECT * FROM utilisateurs where pseudo = '" + nom + "'";
-        con.query(sql, function (err, results) {
+        var sql = "SELECT * FROM utilisateurs where pseudo = '" + pseudo + "'";
+        con.query(sql, function (err, result) {
             if (err) throw err;
-
-            if (results[0][0]) {
-                if (results[1][0]) {
-                    let temps = "";
-                    if (duree)
-                        temps = "+" + duree;
-                    var sql = "insert into ban (userID,temps) Values('" + results[1][0].id + "',NOW()+ interval + 60" + temps + " minute);"
-                    con.query(sql, function (err) {
-                        if (err) throw err;
-                    })
-                }
-                else {
-                    if (duree) {
-
-                        io.to(results[0][0].id).emit("cookie", duree);
+            for (ids in connected_users) {
+                if (connected_users[ids][1] == pseudo) {
+                    
+                    if (result[0]) {
+                        let temps = "";
+                        if (duree)
+                            temps = "+" + duree;
+                        var sql = "insert into ban (userID,temps) Values('" + result[0].id + "',NOW()+ interval + 60" + temps + " minute);"
+                        con.query(sql, function (err) {
+                            if (err) throw err;
+                        })
                     }
                     else {
-                        io.to(results[0][0].id).emit("cookie", 0);
+                        if (duree) {
+    
+                            io.to(connected_users[ids][1]).emit("cookie", duree);
+                        }
+                        else {
+                            io.to(connected_users[ids][1]).emit("cookie", 0);
+                        }
                     }
+                    console.log("Utilisateur banni");
+                    io.to(connected_users[ids][1]).emit("deco","kick");
                 }
-
-
-                io.to(results[0][0].id).emit("deco", "ban");
-                console.log("Utilisateur banni");
             }
             
+        
         })
     })
 
@@ -272,14 +257,13 @@ io.on('connection', (socket) => {
     })
 
     /* Envoie un signal à "nom" qui permet de le deconnecter */
-    socket.on("kick", (nom) => {
-        var sql = "SELECT id FROM testonline WHERE pseudo = '" + nom + "'";
-        con.query(sql, function (err, result) {
-            if (err) throw err;
-            if (result[0])
-                io.to(result[0].id).emit("deco", "kick");
-            console.log("Utilisateur expulse");
-        })
+    socket.on("kick",(pseudo)=>{
+        console.log(connected_users);
+        for (ids in connected_users) {
+            if (connected_users[ids][1] == pseudo) {
+                io.to(connected_users[ids][0]).emit("deco","kick");
+            }
+        }
     })
 
     socket.on("admin?", (username) => {
