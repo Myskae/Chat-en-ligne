@@ -216,7 +216,9 @@ io.on('connection', (socket) => {
         var sql = "SELECT * FROM utilisateurs where pseudo = '" + pseudo + "'";
         con.query(sql, function (err, result) {
             if (err) throw err;
-            for (ids in connected_users) {
+            
+            if(!estAdmin(pseudo)){
+                for (ids in connected_users) {
                 if (connected_users[ids][1] == pseudo) {
                     
                     if (result[0]) {
@@ -241,6 +243,7 @@ io.on('connection', (socket) => {
                     io.to(connected_users[ids][1]).emit("deco","kick");
                 }
             }
+            }
             
         
         })
@@ -256,17 +259,17 @@ io.on('connection', (socket) => {
         });
     })
 
-    /* Envoie un signal à "nom" qui permet de le deconnecter */
+    /* Envoie un signal à "pseudo" qui permet de le deconnecter */
     socket.on("kick",(pseudo)=>{
         console.log(connected_users);
         for (ids in connected_users) {
-            if (connected_users[ids][1] == pseudo) {
+            if (connected_users[ids][1] == pseudo && !estAdmin(pseudo)) {
                 io.to(connected_users[ids][0]).emit("deco","kick");
             }
         }
     })
 
-    /* Vérifie si l'utilisateur est admin */
+    /* envoie un signal à l'utilisateur s'il est admin */
     socket.on("admin?", (username) => {    
         if (estAdmin(username))
             socket.emit("admin", true);
@@ -338,12 +341,13 @@ io.on('connection', (socket) => {
     
 });
 
-
+/* Vérifie si l'utilisateur est admin */
 function estAdmin(username){
         con.query("Select admin from utilisateurs where pseudo = '" + username + "'", function (err, result) {
             if (err) throw err;
             if (result[0]) {
                 return result[0].admin == 1;
             }
+            return false;
         })
     }
