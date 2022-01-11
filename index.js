@@ -327,15 +327,16 @@ io.on('connection', (socket) => {
         pm_user = msg["msg"].slice(3, i);
         msg["msg"] = msg["msg"].slice(i);
 
-        var sql = "SELECT id FROM testonline WHERE pseudo = '" + pm_user + "'";
-        con.query(sql, function (err, result) {
-            if (err) throw err;
-            if (result[0]) {
+        let id;
+        for (ids in connected_users) {
+            if (connected_users[ids][1] == pseudo) {
+                id = socket.id;
                 io.to(socket.id).emit('private message', (msg));
-                io.to(result[0].id).emit('private message', (msg));
+                io.to(id).emit('private message', (msg));
+                return;
+                
             }
-
-        })
+        }
 
     }
     
