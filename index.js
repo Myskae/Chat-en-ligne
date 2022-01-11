@@ -263,9 +263,15 @@ io.on('connection', (socket) => {
     })
 
     /* envoie un signal à l'utilisateur s'il est admin */
-    socket.on("admin?", (username) => {    
-        if (estAdmin(username))
-            socket.emit("admin", true);
+    socket.on("admin?", (username) => {
+        con.query("Select admin from utilisateurs where pseudo = '" + username + "'", function (err, result) {
+            if (err) throw err;
+            if (result[0]) {
+                if (result[0].admin == 1) {
+                    socket.emit("admin", true);
+                }
+            }
+        })
     })
 
     socket.on("mettreadmin", (username) => {
