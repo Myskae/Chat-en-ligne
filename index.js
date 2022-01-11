@@ -303,8 +303,41 @@ io.emit('some event', { someProperty: 'some value', otherProperty: 'other value'
 
 
 io.on('connection', (socket) => {
+
+
     socket.on('chat message', (msg) => {
         msg["msg"] = emoji.emojify(msg["msg"]);
-        io.emit('chat message', (msg));
+
+        if (msg["msg"][0] == "/") {
+            if (msg["msg"].slice(0, 3) == "/w ")
+                whisper(msg);
+            
+        }
+        else
+            io.emit('chat message', (msg));
+
     });
+    
+      function whisper(msg) {
+
+        let pm_user = "";
+        let i = 3;
+        while (msg["msg"][i] != " ") {
+            i++;
+        }
+        pm_user = msg["msg"].slice(3, i);
+        msg["msg"] = msg["msg"].slice(i);
+
+        var sql = "SELECT id FROM testonline WHERE pseudo = '" + pm_user + "'";
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+            if (result[0]) {
+                io.to(socket.id).emit('private message', (msg));
+                io.to(result[0].id).emit('private message', (msg));
+            }
+
+        })
+
+    }
+    
 });
