@@ -327,7 +327,7 @@ socket.on('private message', function (msg) {
 
         let newMessageLine = document.createElement('p');
         newMessageLine.classList.add("backLine");
-        newMessageLine.textContent = "(en privé) " + msg["pseudo"] + " : " + message;
+        newMessageLine.textContent = "(private) " + msg["pseudo"] + " : " + message;
 
         if (couleur) {
             newMessageLine.classList.add("grad_bg")
