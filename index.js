@@ -330,7 +330,7 @@ io.on('connection', (socket) => {
         let id;
         for (ids in connected_users) {
             if (connected_users[ids][1] == pseudo) {
-                id = socket.id;
+                id = connected_users[ids][0];
                 io.to(socket.id).emit('private message', (msg));
                 io.to(id).emit('private message', (msg));
                 return;
