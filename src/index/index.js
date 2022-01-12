@@ -157,40 +157,41 @@ socket.on('user-connected', (users) => {
 //Fonction lancé lorsque un utilisateur est cliqué dessus
 function clickuser(user) {
     
-    socket.emit("admin?", myUsername);
-    socket.on("admin", (boul) => {
-        if (boul) {
-
-            let nom = user;
-
-            let kick = document.getElementById("kick");
-            let ban = document.getElementById("ban");
-            let admin = document.getElementById("Admin");
-            let plusadmin = document.getElementById("PlusAdmin");
-            
-
-            modal.style.display = "block";
-            ban.addEventListener("click", () => {
-                let duree = prompt("Minutes?");
-                socket.emit("ban", duree, nom);
-            })
-
-            kick.addEventListener("click", () => {
-                socket.emit("testkick", nom);
-            })
-
-            admin.addEventListener("click", () => {
-                socket.emit("mettreadmin", nom);
-            })
-
-            plusadmin.addEventListener("click", () => {
-                socket.emit("enleveradmin", nom);
-            })
-
-        }
-    })
+    socket.emit("admin?", myUsername,user);
+    
 }
 
+socket.on("admin", (boul,user) => {
+    if (boul &&user!=myUsername) {
+        console.log("boul = " + boul);
+        let nom = user;
+
+        let kick = document.getElementById("kick");
+        let ban = document.getElementById("ban");
+        let admin = document.getElementById("Admin");
+        let plusadmin = document.getElementById("PlusAdmin");
+        
+
+        modal.style.display = "block";
+        ban.addEventListener("click", () => {
+            let duree = prompt("Minutes?");
+            socket.emit("ban", duree, nom);
+        })
+
+        kick.addEventListener("click", () => {
+            socket.emit("kick", nom);
+        })
+
+        admin.addEventListener("click", () => {
+            socket.emit("mettreadmin", nom);
+        })
+
+        plusadmin.addEventListener("click", () => {
+            socket.emit("enleveradmin", nom);
+        })
+
+    }
+})
 
 
 msgform.addEventListener('submit', function (event) {
