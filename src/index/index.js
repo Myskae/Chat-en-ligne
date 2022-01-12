@@ -2,6 +2,13 @@ var socket = io();
 
 
 
+//----------pub----------
+document.getElementById("pubimage").addEventListener("click", () => {
+    window.open('https://twitter.com/Aisudaga');
+})
+
+
+
 //------------------- GESTION MUSIQUE -------------------------
 function play() {
     if (confirm_boolean) {
