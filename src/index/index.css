@@ -434,7 +434,7 @@
             position: absolute;
             right: 5px;
             bottom: -100%;
-
+            z-index: 100000;
         }
 
 
